@@ -1,0 +1,98 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Youkai Yashiki - desensamblado comentado</title>
+<style>
+:root{--tinta:#cfd0d4;--suave:#83868f;--fondo:#000;--panel:#0c0e13;--linea:#23262e;
+  --rojo:#ff897d;--cyan:#65dbef;--verde:#3eb849;--oro:#ded087}
+@media (prefers-color-scheme:light){:root{--tinta:#191a1e;--suave:#5a5d66;--fondo:#e9e7e1;
+  --panel:#f7f6f2;--linea:#d0cdc5;--rojo:#b23f34;--cyan:#1c6b7c;--verde:#2b7734;--oro:#8a7420}}
+:root[data-theme="dark"]{--tinta:#cfd0d4;--suave:#83868f;--fondo:#000;--panel:#0c0e13;
+  --linea:#23262e;--rojo:#ff897d;--cyan:#65dbef;--verde:#3eb849;--oro:#ded087}
+:root[data-theme="light"]{--tinta:#191a1e;--suave:#5a5d66;--fondo:#e9e7e1;--panel:#f7f6f2;
+  --linea:#d0cdc5;--rojo:#b23f34;--cyan:#1c6b7c;--verde:#2b7734;--oro:#8a7420}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);padding:0 1.25rem 6rem;
+  font:15px/1.7 ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.w{max-width:1120px;margin:0 auto}
+.n{max-width:68ch}
+h1,h2,h3,h4{font-weight:400;text-wrap:balance}
+a{color:var(--cyan)}
+img{image-rendering:pixelated;max-width:100%;height:auto;display:block}
+header.top{display:flex;flex-direction:column;align-items:center;gap:1.5rem;
+  padding:4rem 0 2rem;text-align:center}
+header.top img{width:min(100%,642px)}
+.claim{max-width:60ch;color:var(--suave);font-size:1.05rem}
+.claim b{color:var(--tinta);font-weight:400}
+.ficha{display:flex;flex-wrap:wrap;justify-content:center;gap:0 1.5rem;width:100%;
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--suave);
+  border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);padding:.85rem 0}
+.ficha b{color:var(--rojo);font-weight:400}
+nav{display:flex;flex-wrap:wrap;gap:1.25rem;justify-content:center;padding:1.25rem 0;
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+nav a{color:var(--suave);text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover,nav a:focus{color:var(--tinta);border-bottom-color:var(--rojo)}
+nav.docs{border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);
+  margin-bottom:1rem}
+section{margin-top:4.5rem;scroll-margin-top:1rem}
+section>h2{font-size:1rem;letter-spacing:.1em;text-transform:uppercase;
+  border-left:3px solid var(--rojo);padding-left:.9rem;margin:0 0 1.5rem}
+.cifras{display:grid;gap:1px;background:var(--linea);border:1px solid var(--linea);
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.cifra{background:var(--panel);padding:1.1rem}
+.cifra b{display:block;font-size:1.7rem;color:var(--oro);font-weight:400;
+  font-variant-numeric:tabular-nums;line-height:1.2}
+.cifra span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--suave)}
+.hall{border-top:1px solid var(--linea);padding-top:1.75rem;margin-top:2.5rem}
+.hall:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.hall h3{margin:0 0 .75rem;font-size:1.15rem;color:var(--rojo)}
+.hall h4{color:var(--oro);margin:1.5rem 0 .5rem;font-size:.95rem}
+.hall p{margin:0 0 1rem}
+pre.asm{background:var(--panel);border-left:2px solid var(--verde);margin:1.25rem 0;
+  padding:1rem 1.1rem;overflow-x:auto;font-size:13px;line-height:1.6;color:var(--tinta)}
+.par{display:grid;gap:1.25rem;grid-template-columns:1fr}
+@media(min-width:820px){.par{grid-template-columns:1fr 1fr}}
+.par figure{margin:0}
+table{border-collapse:collapse;width:100%;margin:1.25rem 0;font-size:13px;display:block;
+  overflow-x:auto}
+th,td{text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--linea)}
+th{color:var(--suave);font-weight:400;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+td.num{font-variant-numeric:tabular-nums;color:var(--oro)}
+.nivel{margin-top:2rem}
+.nivel h3{margin:0 0 .9rem;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+.nivel em{color:var(--cyan);font-style:normal}
+.sep{color:var(--suave);margin:0 .6rem}
+.rejilla{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.rejilla figure{margin:0;background:var(--panel);box-shadow:0 0 0 1px var(--linea)}
+.rejilla figcaption{display:flex;justify-content:space-between;padding:.45rem .65rem;
+  font-size:11px;color:var(--suave);border-top:1px solid var(--linea)}
+.dir{font-variant-numeric:tabular-nums;color:var(--verde)}
+footer{margin-top:5rem;padding-top:1.5rem;border-top:1px solid var(--linea);
+  color:var(--suave);font-size:12px}
+
+/* Aviso de trabajo en curso: tiene que verse antes que las cifras, porque un
+   100% mal leido hace mas dano que no ponerlo. */
+.aviso{background:#3a2a10;border-left:3px solid var(--oro);margin:1.5rem auto;
+  padding:1rem 1.2rem;max-width:900px;border-radius:4px}
+.aviso p{margin:0;color:var(--tinta);font-size:15px;line-height:1.65}
+.galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.5rem;margin:1.5rem 0}
+.galeria figure{margin:0}
+.galeria img{width:100%;height:auto;image-rendering:pixelated;
+  border:1px solid var(--linea);border-radius:3px}
+.galeria figcaption{color:var(--suave);font-size:13px;margin-top:.5rem}
+audio{display:block;width:100%;max-width:640px;margin:.75rem 0 1.5rem}
+</style>
+<header class="top">
+  <img src="data:image/png;base64,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" alt="Youkai Yashiki">
+  <p class="claim">Un juego de plataformas por cinco lugares encantados, del cementerio a la mansi&oacute;n, pantalla a pantalla por escaleras y puertas: el protagonista salta, lanza su arma contra los y&#333;kai, recoge lo que encuentra y en cada sala vence al suceso que la guarda. El t&iacute;tulo sale de ejecutar la ROM, cotejado con openMSX punto a punto; la partida en GIF, jugada en openMSX; las m&uacute;sicas, de su propio motor, id&eacute;nticas a openMSX cuadro a cuadro en las que suenan en las grabaciones.</p>
+  <p class="ficha">Casio - <b>(c) 1986</b> - Cartucho de <b>32 KB</b> (cabecera en 0x4000) - <b>MSX</b> - Volcado <b>15345c87...</b></p>
+</header>
+<p class="ficha" style="border:1px solid var(--oro);padding:.8em 1em;margin:1.5em 0">
+<b>Aqu&iacute; no hay capturas del juego.</b> El t&iacute;tulo sale de ejecutar la ROM y los GIF son la ROM <b>funcionando en openMSX</b>: en cada cuadro se apuntan la VRAM, la RAM y los registros del VDP, y <b>c&oacute;digo nuestro los pinta</b>.</p>
+<nav><a href="LA-PARTIDA.html">La partida</a><a href="LOS-LUGARES.html">Los lugares</a><a href="LOS-TEXTOS.html">Los textos</a><a href="LA-MUSICA.html">La m&uacute;sica</a><span style="opacity:.35">|</span><a href="CURIOSIDADES.html">Curiosidades</a><span style="opacity:.35">|</span><a href="POR-DENTRO.html">Por dentro</a><a href="../" style="margin-left:auto;color:var(--oro)">In English</a></nav>
+<section id="numbers">
+  <h2>El cartucho en cifras</h2>
+  <div class="cifras"><div class="cifra"><b>100 %</b><span>del binario explicado</span></div><div class="cifra"><b>878</b><span>rutinas y etiquetas</span></div><div class="cifra"><b>40,5 %</b><span>del listado comentado</span></div><div class="cifra"><b>14.711</b><span>bytes de código</span></div><div class="cifra"><b>18.057</b><span>bytes de datos</span></div><div class="cifra"><b>0</b><span>bytes sin identificar</span></div></div>
+</section>
+<section id="pages"><h2>Lo que hay dentro</h2><div class="hall"><h3>El juego</h3><ul><li><a href="LA-PARTIDA.html">La partida</a>: la presentaci&oacute;n de CASIO, el t&iacute;tulo, los mandos, las vidas y el aguante, las ca&iacute;das y GAME OVER.</li><li><a href="LOS-LUGARES.html">Los lugares</a>: los cinco lugares y sus 74 pantallas, los sucesos y el final.</li><li><a href="LOS-TEXTOS.html">Los textos</a>: todos los textos de la ROM.</li><li><a href="LA-MUSICA.html">La m&uacute;sica</a>: las m&uacute;sicas, de su propio motor de sonido y cotejadas con openMSX.</li></ul></div><div class="hall"><h3>Curiosidades</h3><ul><li><a href="CURIOSIDADES.html">Curiosidades</a>: las cinco teclas del t&iacute;tulo, F1, una demostraci&oacute;n que juega la BIOS, sobrantes.</li></ul></div><div class="hall"><h3>Por dentro</h3><ul><li><a href="POR-DENTRO.html">Por dentro</a>: rehacer la ROM, el cartucho, la BIOS que usa, el bucle, las pantallas, la RAM y las herramientas.</li></ul></div></section>
+<footer><p>Esto es trabajo de documentación y preservación: el código y los gráficos siguen siendo de sus autores y de Casio, y la imagen del cartucho no se distribuye.</p></footer>

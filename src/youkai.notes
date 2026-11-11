@@ -344,7 +344,7 @@ L 0x8CEA casillas_suelo_suma
 L 0x8CEF casillas_suelo_fila0
 L 0x8CF2 casillas_suelo_col
 L 0x8D01 casillas_suelo_lee
-L 0x8D0F salto                     El salto, con el boton 1 (0xE022): de pie, sin agacharse ni caer; el efecto A 6; hacia la derecha (palanca 2 o 3), la izquierda (7 u 8) o recto; sube por la tabla de 0x98E3 mientras se tenga pulsado el boton (si se suelta, deja de subir); las casillas 0x50-0x5F lo paran por arriba; despues baja hasta una casilla solida; a los lados, las 0x40-0x7F lo paran
+L 0x8D0F salto                     El salto, con el boton 2 (GRAPH, 0xE020): de pie, sin caer; el efecto A 6
 C 0x8D0F la fase acaba?
 L 0x8E14 salto_techo
 C 0x8E15 al empezar: no salta
@@ -591,7 +591,7 @@ L 0xB689 presentacion_arriba_pon
 L 0xB69E presentacion_izq
 L 0xB6A7 presentacion_izq_pon
 L 0xB6BA presentacion_izq_abajo
-L 0xAF73 sala_acabada              La sala acabada (0xE186 = 2): todo fuera, la pantalla se cierra, la vida llena (0xE0A9 = 0xE0A8 x 2), los puntos y la sala siguiente; tras la 4, la 0 y una vuelta mas (0xE009)
+L 0xAF73 sala_acabada              La sala acabada (0xE186 = 2): todo fuera, la pantalla se cierra, el aguante lleno (0xE0A9 = vidas x 2), los puntos y la sala siguiente; tras la 4, la 0 y una vuelta mas (0xE009)
 C 0xAF73 todo fuera
 L 0xB02F casillas_todas            Los dibujos y colores de las casillas 0x30-0xFF en los tres tercios, y los de los sprites
 C 0xB1F5 24 filas
@@ -924,7 +924,7 @@ C 0x7F93 la demostracion: 0xE028 = 1
 C 0x7F97 sus mandos, desde 0x0000
 C 0x7F9D tres (0xE0A8 = 1, sic)
 C 0x7FA0 a jugarla
-L 0x7FA3 partida_nueva             La partida: los puntos a cero, jugando (0xE000 = 1), el maximo de vida a 3 (0xE0A8); con las teclas del titulo, la vida llena (0xE0A9 = 6); 0xE02B-0xE082 a cero
+L 0x7FA3 partida_nueva             La partida: los puntos a cero, jugando (0xE000 = 1), las vidas a 3 (0xE0A8); con las teclas del titulo, el aguante lleno (0xE0A9 = 6); 0xE02B-0xE082 a cero
 L 0x7FB7 partida_va                Todo a cero y a jugar
 C 0x7FB7 todo a cero
 C 0x7FCA jugando...
@@ -932,7 +932,7 @@ C 0x7FCB ...0xE000 = 1
 C 0x7FD7 3...
 C 0x7FD9 ...en 0xE0A8
 C 0x7FDC las teclas del titulo (0xE023)?
-C 0x7FE2 si: la vida llena (6)
+C 0x7FE2 si: el aguante lleno (6)
 L 0x7FE7 partida_borra2            0xE02B-0xE082 (0x58 bytes) a cero
 C 0x7FE7 desde 0xE02B...
 C 0x7FEA ...0x58 bytes
@@ -992,8 +992,8 @@ L 0x8118 bucle_sigue               Jugando, al bucle; en la demostracion, el bot
 C 0x8118 jugando?
 C 0x811F la demostracion: el boton?
 C 0x8126 al titulo
-L 0x8129 f1_atiende                 F1: sin la vida (0xE0A9, en medias), una vida (0xE0A8 = 1) y la muerte; con ellas, la muerte 2
-C 0x8129 la vida?
+L 0x8129 f1_atiende                 F1: sin el aguante (0xE0A9, en medias), una vida (0xE0A8 = 1) y la muerte; con ellas, la muerte 2
+C 0x8129 el aguante?
 C 0x812F no: una vida...
 C 0x8133 ...y la muerte
 L 0x8139 tecla_f1_b                Con ellas: 0xE183 = 2
@@ -1194,7 +1194,7 @@ C 0x85A2 el tercero
 C 0x85A5 WRTVRM
 C 0x85AE uno menos
 C 0x85B3 una pasada menos
-L 0x85BD ataque                    El ataque (boton 1): el arma (0xE320) sale del protagonista hacia su lado (+0x17), 4 pixeles por cuadro; con la vida llena (0xE0A9 / 2 = 0xE0A8), el ataque largo (+0x0D = 2); si no, el corto (1, 5 cuadros)
+L 0x85BD ataque                    El ataque (boton 1): el arma (0xE320) sale del protagonista hacia su lado (+0x17), 4 pixeles por cuadro; con el aguante lleno (0xE0A9 / 2 = las vidas), el ataque largo (+0x0D = 2); si no, el corto (1, 5 cuadros)
 C 0x85BD atacando?
 C 0x85C1 si: sigue
 C 0x85C3 el boton 1?
@@ -1295,10 +1295,10 @@ C 0x7F45 LDIRVM
 C 0x7F5E el boton de empezar
 C 0x7F6C la sala
 C 0x7F7C la sala
-C 0x7F90 la vida (0xE0A9, en medias)
-C 0x7FBE la vida (0xE0A9, en medias)
+C 0x7F90 el aguante (0xE0A9, en medias)
+C 0x7FBE el aguante (0xE0A9, en medias)
 C 0x7FC4 la sala
-C 0x7FE4 la vida (0xE0A9, en medias)
+C 0x7FE4 el aguante (0xE0A9, en medias)
 C 0x8061 la Y de su segundo sprite
 C 0x8069 la X de su segundo sprite
 C 0x8071 su dibujo de pie (+7)
@@ -1309,7 +1309,7 @@ C 0x80A9 la Y del protagonista
 C 0x80AD la Y de su segundo sprite
 C 0x80D5 la cuenta de cuadros
 C 0x80E9 el dibujo de su segundo sprite
-C 0x8130 el maximo de vida (0xE0A8)
+C 0x8130 las vidas (0xE0A8)
 C 0x816B el dibujo de su segundo sprite
 C 0x816F el dibujo del arma
 C 0x817C la Y del protagonista
@@ -1550,7 +1550,7 @@ C 0x8F63 su X, uno menos
 C 0x8F66 la X de su segundo sprite, uno menos
 C 0x8F69 su dibujo
 C 0x8F6D el dibujo de su segundo sprite
-C 0x8F81 la vida (0xE0A9, en medias)
+C 0x8F81 el aguante (0xE0A9, en medias)
 C 0x8FD0 0xE1B0 (el suceso)
 C 0x8FD6 los golpes al suceso (0xE1B2)
 C 0x8FE8 la Y del arma
@@ -1629,8 +1629,8 @@ C 0x97B8 FILVRM
 C 0x97C4 FILVRM
 C 0x97D3 FILVRM
 C 0x97DF FILVRM
-C 0x97F3 el maximo de vida (0xE0A8)
-C 0x97F9 la vida (0xE0A9, en medias)
+C 0x97F3 las vidas (0xE0A8)
+C 0x97F9 el aguante (0xE0A9, en medias)
 C 0x9824 WRTVRM
 C 0x982D WRTVRM
 C 0x9833 tocado (+4)
@@ -1653,14 +1653,14 @@ C 0x9A2E WRTVRM
 C 0x9A35 WRTVRM
 C 0x9A3A el sonido del canal A
 C 0x9A50 los puntos
-C 0x9A6C el maximo de vida (0xE0A8)
-C 0x9A74 el maximo de vida (0xE0A8)
+C 0x9A6C las vidas (0xE0A8)
+C 0x9A74 las vidas (0xE0A8)
 C 0x9AAA WRTVRM
 C 0x9AB3 WRTVRM
 C 0x9AD6 el sonido del canal A
 C 0x9AE3 al azar
 C 0x9AEC al azar
-C 0x9AF2 el maximo de vida (0xE0A8)
+C 0x9AF2 las vidas (0xE0A8)
 C 0x9B16 WRTVRM
 C 0x9B1D WRTVRM
 C 0x9B28 al azar
@@ -1982,8 +1982,8 @@ C 0xADDA la sala acabada (0xE186)
 C 0xADE1 la sala
 C 0xADE5 la sala
 C 0xADED la sala
-C 0xADFE el maximo de vida (0xE0A8)
-C 0xAE02 el maximo de vida (0xE0A8)
+C 0xADFE las vidas (0xE0A8)
+C 0xAE02 las vidas (0xE0A8)
 C 0xAE0C WRTVRM
 C 0xAE17 WRTVRM
 C 0xAE21 la cuenta de cuadros
@@ -2000,15 +2000,15 @@ C 0xAE62 la cuenta de cuadros
 C 0xAE69 su color
 C 0xAE6C la cuenta de cuadros
 C 0xAE76 la cuenta de cuadros
-C 0xAE84 el maximo de vida (0xE0A8)
+C 0xAE84 las vidas (0xE0A8)
 C 0xAE9D LDIRVM
 C 0xAEBB la musica
 C 0xAEBE el boton 1
 C 0xAEC6 el boton 2
-C 0xAECE el maximo de vida (0xE0A8)
-C 0xAED6 el maximo de vida (0xE0A8)
-C 0xAED9 el maximo de vida (0xE0A8)
-C 0xAEDE la vida (0xE0A9, en medias)
+C 0xAECE las vidas (0xE0A8)
+C 0xAED6 las vidas (0xE0A8)
+C 0xAED9 las vidas (0xE0A8)
+C 0xAEDE el aguante (0xE0A9, en medias)
 C 0xAEE1 la sala
 C 0xAF32 LDIRVM
 C 0xAF37 la musica
@@ -2016,8 +2016,8 @@ C 0xAF3A hasta que acabe la musica
 C 0xAF41 jugando?
 C 0xAF44 el boton de empezar
 C 0xAF7A la cuenta de cuadros
-C 0xAF80 el maximo de vida (0xE0A8)
-C 0xAF85 la vida (0xE0A9, en medias)
+C 0xAF80 las vidas (0xE0A8)
+C 0xAF85 el aguante (0xE0A9, en medias)
 C 0xAF96 la sala
 C 0xAFEB su X
 C 0xAFF3 la Y del arma
@@ -2027,32 +2027,32 @@ C 0xB06B LDIRVM
 C 0xB076 FILVRM
 C 0xB082 FILVRM
 C 0xB08B FILVRM
-C 0xB08E el maximo de vida (0xE0A8)
+C 0xB08E las vidas (0xE0A8)
 C 0xB099 WRTVRM
-C 0xB0A2 el maximo de vida (0xE0A8)
+C 0xB0A2 las vidas (0xE0A8)
 C 0xB0A8 WRTVRM
-C 0xB0AE la vida (0xE0A9, en medias)
+C 0xB0AE el aguante (0xE0A9, en medias)
 C 0xB0C0 WRTVRM
 C 0xB0CC WRTVRM
 C 0xB0DD WRTVRM
 C 0xB0E8 WRTVRM
 C 0xB0F4 WRTVRM
 C 0xB0FA WRTVRM
-C 0xB0FE el maximo de vida (0xE0A8)
-C 0xB104 la vida (0xE0A9, en medias)
-C 0xB10A la vida (0xE0A9, en medias)
+C 0xB0FE las vidas (0xE0A8)
+C 0xB104 el aguante (0xE0A9, en medias)
+C 0xB10A el aguante (0xE0A9, en medias)
 C 0xB116 el efecto de B y C
-C 0xB11A la vida (0xE0A9, en medias)
-C 0xB120 el maximo de vida (0xE0A8)
-C 0xB126 la vida (0xE0A9, en medias)
-C 0xB12A la vida (0xE0A9, en medias)
+C 0xB11A el aguante (0xE0A9, en medias)
+C 0xB120 las vidas (0xE0A8)
+C 0xB126 el aguante (0xE0A9, en medias)
+C 0xB12A el aguante (0xE0A9, en medias)
 C 0xB132 el sonido del canal A
-C 0xB136 la vida (0xE0A9, en medias)
-C 0xB13A la vida (0xE0A9, en medias)
+C 0xB136 el aguante (0xE0A9, en medias)
+C 0xB13A el aguante (0xE0A9, en medias)
 C 0xB142 el sonido del canal A
-C 0xB155 la vida (0xE0A9, en medias)
+C 0xB155 el aguante (0xE0A9, en medias)
 C 0xB164 el sonido del canal A
-C 0xB167 la vida (0xE0A9, en medias)
+C 0xB167 el aguante (0xE0A9, en medias)
 C 0xB1F8 la cuenta de cuadros
 C 0xB1FB la cuenta de cuadros
 C 0xB203 la cuenta de cuadros
@@ -3050,13 +3050,13 @@ L 0xAFE8 cerca_x                   ¿Toca en X? La X de IY menos la del protagon
 L 0xAFF0 arma_cerca_y              ¿El arma toca en Y?
 L 0xAFF8 arma_cerca_x              ¿El arma toca en X?
 L 0xB01C pantalla_limpia2          La RAM a cero y los botones a 0 (sin borrar la pantalla)
-L 0xB056 marcador                  HISCORE: (0x5705) en la fila 0, columna 17, SCORE en la 1, la vida y los puntos
-L 0xB07A vida_pinta                La vida: las filas 0 y 1 desde la columna 1 en blanco y las casillas de la vida (0xE0A9 / 2 enteras y media)
+L 0xB056 marcador                  HISCORE: (0x5705) en la fila 0, columna 17, SCORE en la 1, el aguante y los puntos
+L 0xB07A vida_pinta                El aguante: las filas 0 y 1 desde la columna 1 en blanco y sus casillas (0xE0A9 / 2 enteras y media)
 L 0xB0AE vida_casillas             0xE0A9 / 2 casillas 0x64 arriba y 0x63 abajo; con impar, media
-L 0xB0FE vida_llena                La vida llena (0xE0A9 = el maximo, 0xE0A8, x 2), pintada, 0xE0AA a 0 y el efecto 3
-L 0xB11A vida_media                Media vida mas (0xE0A9 + 1), si no esta llena, con el sonido 1
-L 0xB136 vida_resta                La vida - 1, pintada, y el sonido 7
-L 0xB146 golpe                     Un golpe al protagonista: nada con las teclas del titulo, tocado o parpadeando; si no, la vida - 1 y el parpadeo; sin vida, la muerte
+L 0xB0FE vida_llena                El aguante lleno (0xE0A9 = las vidas, 0xE0A8, x 2), pintado, 0xE0AA a 0 y el efecto 3
+L 0xB11A vida_media                Medio aguante mas (0xE0A9 + 1), si no esta lleno, con el sonido 1
+L 0xB136 vida_resta                El aguante - 1, pintado, y el sonido 7
+L 0xB146 golpe                     Un golpe al protagonista: nada con las teclas del titulo, tocado o parpadeando; con aguante, medio menos y el parpadeo; sin el, la muerte
 L 0xB19A objetos_borra             Los 256 bytes de 0xE400 a cero
 L 0xB1A5 enemigos_borra            Los 0xC0 bytes de 0xE340 a cero y sus 12 enemigos fuera
 L 0xB1C3 pantalla_abre             La sala de la RAM a la pantalla desde los bordes hacia el centro

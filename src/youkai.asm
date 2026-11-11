@@ -1285,14 +1285,14 @@ demostracion_va:		; La demostracion (0xE028 = 1), sus mandos desde 0x0000 (0xE02
 	xor a			;7f89   ; todo a cero
 	ld (0e098h),a		;7f8a
 	ld (0e023h),a		;7f8d
-	ld (0e0a9h),a		;7f90   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;7f90   ; el aguante (0xE0A9, en medias)
 	inc a			;7f93   ; la demostracion: 0xE028 = 1
 	ld (0e028h),a		;7f94
 	ld hl,00000h		;7f97   ; sus mandos, desde 0x0000
 	ld (0e029h),hl		;7f9a
 	ld (0e0a8h),a		;7f9d   ; tres (0xE0A8 = 1, sic)
 	jp sala_empieza		;7fa0   ; a jugarla
-partida_nueva:		; La partida: los puntos a cero, jugando (0xE000 = 1), el maximo de vida a 3 (0xE0A8); con las teclas del titulo, la vida llena (0xE0A9 = 6); 0xE02B-0xE082 a cero
+partida_nueva:		; La partida: los puntos a cero, jugando (0xE000 = 1), las vidas a 3 (0xE0A8); con las teclas del titulo, el aguante lleno (0xE0A9 = 6); 0xE02B-0xE082 a cero
 	ld hl,0e001h		;7fa3   ; los puntos (0xE001-0xE006) a cero
 	ld b,006h		;7fa6   ; seis cifras
 partida_borra:
@@ -1307,7 +1307,7 @@ partida_va:		; Todo a cero y a jugar
 	xor a			;7fb7   ; todo a cero
 	ld (0e027h),a		;7fb8
 	ld (0e028h),a		;7fbb
-	ld (0e0a9h),a		;7fbe   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;7fbe   ; el aguante (0xE0A9, en medias)
 	ld (0e0aah),a		;7fc1
 	ld (0e00ah),a		;7fc4   ; la sala
 	ld (0e098h),a		;7fc7
@@ -1321,8 +1321,8 @@ partida_va:		; Todo a cero y a jugar
 	ld a,(0e023h)		;7fdc   ; las teclas del titulo (0xE023)?
 	and a			;7fdf
 	jr z,partida_borra2		;7fe0
-	ld a,006h		;7fe2   ; si: la vida llena (6)
-	ld (0e0a9h),a		;7fe4   ; la vida (0xE0A9, en medias)
+	ld a,006h		;7fe2   ; si: el aguante lleno (6)
+	ld (0e0a9h),a		;7fe4   ; el aguante (0xE0A9, en medias)
 partida_borra2:		; 0xE02B-0xE082 (0x58 bytes) a cero
 	ld hl,0e02bh		;7fe7   ; desde 0xE02B...
 	ld b,058h		;7fea   ; ...0x58 bytes
@@ -1468,12 +1468,12 @@ bucle_sigue:		; Jugando, al bucle; en la demostracion, el boton vuelve al titulo
 	and a			;8122
 	jp z,bucle		;8123
 	jp titulo		;8126   ; al titulo
-f1_atiende:		; F1: sin la vida (0xE0A9, en medias), una vida (0xE0A8 = 1) y la muerte; con ellas, la muerte 2
-	ld a,(0e0a9h)		;8129   ; la vida?
+f1_atiende:		; F1: sin el aguante (0xE0A9, en medias), una vida (0xE0A8 = 1) y la muerte; con ellas, la muerte 2
+	ld a,(0e0a9h)		;8129   ; el aguante?
 	and a			;812c
 	jr nz,tecla_f1_b		;812d
 	inc a			;812f   ; no: una vida...
-	ld (0e0a8h),a		;8130   ; el maximo de vida (0xE0A8)
+	ld (0e0a8h),a		;8130   ; las vidas (0xE0A8)
 	ld (0e183h),a		;8133   ; ...y la muerte
 	jp bucle		;8136
 tecla_f1_b:		; Con ellas: 0xE183 = 2
@@ -2065,7 +2065,7 @@ dibujo_deshace_byte:		; Un byte: RDVRM, AND con R, a los tres tercios
 	ld (0e1a6h),a		;85b7
 	jr nz,dibujo_deshace_pasada		;85ba
 	ret			;85bc
-ataque:		; El ataque (boton 1): el arma (0xE320) sale del protagonista hacia su lado (+0x17), 4 pixeles por cuadro; con la vida llena (0xE0A9 / 2 = 0xE0A8), el ataque largo (+0x0D = 2); si no, el corto (1, 5 cuadros)
+ataque:		; El ataque (boton 1): el arma (0xE320) sale del protagonista hacia su lado (+0x17), 4 pixeles por cuadro; con el aguante lleno (0xE0A9 / 2 = las vidas), el ataque largo (+0x0D = 2); si no, el corto (1, 5 cuadros)
 	ld a,(ix+00dh)		;85bd   ; atacando?
 	and a			;85c0
 	jr nz,ataque_vuela		;85c1   ; si: sigue
@@ -3067,7 +3067,7 @@ casillas_suelo_lee:
 	ld a,(hl)			;8d0a
 	ld (ix+015h),a		;8d0b   ; en +0x15
 	ret			;8d0e
-salto:		; El salto, con el boton 1 (0xE022): de pie, sin agacharse ni caer; el efecto A 6; hacia la derecha (palanca 2 o 3), la izquierda (7 u 8) o recto; sube por la tabla de 0x98E3 mientras se tenga pulsado el boton (si se suelta, deja de subir); las casillas 0x50-0x5F lo paran por arriba; despues baja hasta una casilla solida; a los lados, las 0x40-0x7F lo paran
+salto:		; El salto, con el boton 2 (GRAPH, 0xE020): de pie, sin caer; el efecto A 6
 	ld a,(0e047h)		;8d0f   ; la fase acaba?
 	cp 002h		;8d12
 	ret z			;8d14
@@ -3373,7 +3373,7 @@ salto_mira:		; Puede saltar? (0xE0AB, la vida)
 	ld a,(0e0abh)		;8f7b
 	and a			;8f7e
 	jr nz,L_8F87		;8f7f
-	ld a,(0e0a9h)		;8f81   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;8f81   ; el aguante (0xE0A9, en medias)
 	and a			;8f84
 	jr z,L_8F8C		;8f85
 L_8F87:
@@ -4473,10 +4473,10 @@ L_97E3:
 	ld bc,001ffh		;97eb   ; en X
 	call cerca_prota		;97ee   ; toca?
 	jr nc,L_9851		;97f1
-	ld a,(0e0a8h)		;97f3   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;97f3   ; las vidas (0xE0A8)
 	sla a		;97f6   ; x 2
 	ld b,a			;97f8
-	ld a,(0e0a9h)		;97f9   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;97f9   ; el aguante (0xE0A9, en medias)
 	cp b			;97fc   ; iguales?
 	jr z,L_9833		;97fd
 	ld a,(0e04bh)		;97ff   ; 0xE04B...
@@ -4804,11 +4804,11 @@ L_9A5F:
 L_9A68:
 	cp 00bh		;9a68
 	jr nz,L_9A7D		;9a6a
-	ld a,(0e0a8h)		;9a6c   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;9a6c   ; las vidas (0xE0A8)
 	cp 007h		;9a6f
 	jr nc,L_9A4E		;9a71
 	inc a			;9a73
-	ld (0e0a8h),a		;9a74   ; el maximo de vida (0xE0A8)
+	ld (0e0a8h),a		;9a74   ; las vidas (0xE0A8)
 	call vida_llena		;9a77
 	call vida_pinta		;9a7a
 L_9A7D:
@@ -4876,7 +4876,7 @@ L_9AB7:
 	ld a,r		;9aec   ; al azar
 	bit 5,a		;9aee
 	jr nz,L_9AFC		;9af0
-	ld a,(0e0a8h)		;9af2   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;9af2   ; las vidas (0xE0A8)
 	cp 007h		;9af5
 	jr nc,L_9AFC		;9af7
 	ld a,b			;9af9
@@ -7149,9 +7149,9 @@ L_ADF7:
 	ld a,(0e183h)		;adf7
 	cp 001h		;adfa
 	jr nz,L_AE20		;adfc
-	ld a,(0e0a8h)		;adfe   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;adfe   ; las vidas (0xE0A8)
 	dec a			;ae01
-	ld (0e0a8h),a		;ae02   ; el maximo de vida (0xE0A8)
+	ld (0e0a8h),a		;ae02   ; las vidas (0xE0A8)
 	ld hl,01801h		;ae05
 	ld b,007h		;ae08
 	ld a,080h		;ae0a
@@ -7212,7 +7212,7 @@ L_AE76:
 	ld a,(0e183h)		;ae7d
 	cp 001h		;ae80
 	jr nz,L_AE8E		;ae82
-	ld a,(0e0a8h)		;ae84   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;ae84   ; las vidas (0xE0A8)
 	and a			;ae87
 	jp z,L_AF20		;ae88
 	jp L_AEE1		;ae8b
@@ -7245,14 +7245,14 @@ L_AEC6:
 	jr z,L_AEBE		;aeca
 	jr L_AF20		;aecc
 L_AECE:
-	ld a,(0e0a8h)		;aece   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;aece   ; las vidas (0xE0A8)
 	cp 001h		;aed1
 	jr z,L_AEE1		;aed3
 	dec a			;aed5
-	ld (0e0a8h),a		;aed6   ; el maximo de vida (0xE0A8)
-	ld a,(0e0a8h)		;aed9   ; el maximo de vida (0xE0A8)
+	ld (0e0a8h),a		;aed6   ; las vidas (0xE0A8)
+	ld a,(0e0a8h)		;aed9   ; las vidas (0xE0A8)
 	sla a		;aedc
-	ld (0e0a9h),a		;aede   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;aede   ; el aguante (0xE0A9, en medias)
 L_AEE1:
 	ld a,(0e00ah)		;aee1   ; la sala
 	cp 002h		;aee4
@@ -7314,15 +7314,15 @@ DATA_continuar:
 ; ======================================================================
 
 
-sala_acabada:		; La sala acabada (0xE186 = 2): todo fuera, la pantalla se cierra, la vida llena (0xE0A9 = 0xE0A8 x 2), los puntos y la sala siguiente; tras la 4, la 0 y una vuelta mas (0xE009)
+sala_acabada:		; La sala acabada (0xE186 = 2): todo fuera, la pantalla se cierra, el aguante lleno (0xE0A9 = vidas x 2), los puntos y la sala siguiente; tras la 4, la 0 y una vuelta mas (0xE009)
 	call objetos_fuera		;af73   ; todo fuera
 	call pantalla_cierra		;af76
 	xor a			;af79
 	ld (0e011h),a		;af7a   ; la cuenta de cuadros
 	ld (0e0aah),a		;af7d
-	ld a,(0e0a8h)		;af80   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;af80   ; las vidas (0xE0A8)
 	sla a		;af83
-	ld (0e0a9h),a		;af85   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;af85   ; el aguante (0xE0A9, en medias)
 	call puntos_pinta		;af88
 	ld hl,0e00ah		;af8b
 	inc (hl)			;af8e
@@ -7435,7 +7435,7 @@ casillas_todas:		; Los dibujos y colores de las casillas 0x30-0xFF en los tres t
 	ld de,03180h		;b04d
 	call colores_pon		;b050
 	jp sprites_dibujos		;b053
-marcador:		; HISCORE: (0x5705) en la fila 0, columna 17, SCORE en la 1, la vida y los puntos
+marcador:		; HISCORE: (0x5705) en la fila 0, columna 17, SCORE en la 1, el aguante y los puntos
 	ld de,01811h		;b056
 	ld hl,05705h		;b059
 	ld bc,0000fh		;b05c
@@ -7449,7 +7449,7 @@ marcador:		; HISCORE: (0x5705) en la fila 0, columna 17, SCORE en la 1, la vida 
 	ld a,060h		;b074
 	call 00056h		;b076   ; FILVRM
 	ret			;b079
-vida_pinta:		; La vida: las filas 0 y 1 desde la columna 1 en blanco y las casillas de la vida (0xE0A9 / 2 enteras y media)
+vida_pinta:		; El aguante: las filas 0 y 1 desde la columna 1 en blanco y sus casillas (0xE0A9 / 2 enteras y media)
 	ld hl,01801h		;b07a
 	ld bc,00007h		;b07d
 	ld a,010h		;b080
@@ -7457,7 +7457,7 @@ vida_pinta:		; La vida: las filas 0 y 1 desde la columna 1 en blanco y las casil
 	ld hl,01821h		;b085
 	ld bc,00007h		;b088
 	call 00056h		;b08b   ; FILVRM
-	ld a,(0e0a8h)		;b08e   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;b08e   ; las vidas (0xE0A8)
 	and a			;b091
 	ret z			;b092
 	ld b,a			;b093
@@ -7468,7 +7468,7 @@ L_B099:
 	inc hl			;b09c
 	djnz L_B099		;b09d
 	ld hl,01821h		;b09f
-	ld a,(0e0a8h)		;b0a2   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;b0a2   ; las vidas (0xE0A8)
 	ld b,a			;b0a5
 	ld a,061h		;b0a6
 L_B0A8:
@@ -7476,7 +7476,7 @@ L_B0A8:
 	inc hl			;b0ab
 	djnz L_B0A8		;b0ac
 vida_casillas:		; 0xE0A9 / 2 casillas 0x64 arriba y 0x63 abajo; con impar, media
-	ld a,(0e0a9h)		;b0ae   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;b0ae   ; el aguante (0xE0A9, en medias)
 	and a			;b0b1   ; ninguna?
 	ret z			;b0b2
 	bit 0,a		;b0b3   ; impar?
@@ -7524,45 +7524,45 @@ L_B0F4:
 	djnz L_B0F4		;b0f8
 	call 0004dh		;b0fa   ; WRTVRM
 	ret			;b0fd
-vida_llena:		; La vida llena (0xE0A9 = el maximo, 0xE0A8, x 2), pintada, 0xE0AA a 0 y el efecto 3
-	ld a,(0e0a8h)		;b0fe   ; el maximo de vida (0xE0A8)
+vida_llena:		; El aguante lleno (0xE0A9 = las vidas, 0xE0A8, x 2), pintado, 0xE0AA a 0 y el efecto 3
+	ld a,(0e0a8h)		;b0fe   ; las vidas (0xE0A8)
 	sla a		;b101
 	ld b,a			;b103
-	ld a,(0e0a9h)		;b104   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;b104   ; el aguante (0xE0A9, en medias)
 	cp b			;b107
 	ret z			;b108
 	ld a,b			;b109
-	ld (0e0a9h),a		;b10a   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;b10a   ; el aguante (0xE0A9, en medias)
 	call vida_casillas		;b10d
 	xor a			;b110
 	ld (0e0aah),a		;b111
 	ld a,003h		;b114
 	call efecto_pide		;b116   ; el efecto de B y C
 	ret			;b119
-vida_media:		; Media vida mas (0xE0A9 + 1), si no esta llena, con el sonido 1
-	ld a,(0e0a9h)		;b11a   ; la vida (0xE0A9, en medias)
+vida_media:		; Medio aguante mas (0xE0A9 + 1), si no esta lleno, con el sonido 1
+	ld a,(0e0a9h)		;b11a   ; el aguante (0xE0A9, en medias)
 	srl a		;b11d
 	ld b,a			;b11f
-	ld a,(0e0a8h)		;b120   ; el maximo de vida (0xE0A8)
+	ld a,(0e0a8h)		;b120   ; las vidas (0xE0A8)
 	cp b			;b123
 	ret z			;b124
 	ret c			;b125
-	ld a,(0e0a9h)		;b126   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;b126   ; el aguante (0xE0A9, en medias)
 	inc a			;b129
-	ld (0e0a9h),a		;b12a   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;b12a   ; el aguante (0xE0A9, en medias)
 	call vida_casillas		;b12d
 	ld a,001h		;b130
 	call sonido_a_pide		;b132   ; el sonido del canal A
 	ret			;b135
-vida_resta:		; La vida - 1, pintada, y el sonido 7
-	ld a,(0e0a9h)		;b136   ; la vida (0xE0A9, en medias)
+vida_resta:		; El aguante - 1, pintado, y el sonido 7
+	ld a,(0e0a9h)		;b136   ; el aguante (0xE0A9, en medias)
 	dec a			;b139
-	ld (0e0a9h),a		;b13a   ; la vida (0xE0A9, en medias)
+	ld (0e0a9h),a		;b13a   ; el aguante (0xE0A9, en medias)
 	call vida_pinta		;b13d
 	ld a,007h		;b140
 	call sonido_a_pide		;b142   ; el sonido del canal A
 	ret			;b145
-golpe:		; Un golpe al protagonista: nada con las teclas del titulo, tocado o parpadeando; si no, la vida - 1 y el parpadeo; sin vida, la muerte
+golpe:		; Un golpe al protagonista: nada con las teclas del titulo, tocado o parpadeando; con aguante, medio menos y el parpadeo; sin el, la muerte
 	ld a,(0e023h)		;b146   ; 0xE023 (las teclas del titulo): no pasa nada
 	and a			;b149
 	ret nz			;b14a
@@ -7572,14 +7572,14 @@ golpe:		; Un golpe al protagonista: nada con las teclas del titulo, tocado o par
 	ld a,(ix+01ah)		;b150   ; parpadeando?
 	and a			;b153
 	ret nz			;b154
-	ld a,(0e0a9h)		;b155   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;b155   ; el aguante (0xE0A9, en medias)
 	and a			;b158   ; hay?
 	jr z,L_B172		;b159
 	call vida_resta		;b15b
 	ld (ix+01ah),001h		;b15e   ; +0x1A = 1
 	ld a,005h		;b162   ; el sonido 5
 	call sonido_a_pide		;b164   ; el sonido del canal A
-	ld a,(0e0a9h)		;b167   ; la vida (0xE0A9, en medias)
+	ld a,(0e0a9h)		;b167   ; el aguante (0xE0A9, en medias)
 	and a			;b16a
 	ret nz			;b16b
 	ld a,002h		;b16c
