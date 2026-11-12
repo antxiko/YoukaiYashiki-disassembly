@@ -14,6 +14,34 @@ Con las cinco teclas del t&iacute;tulo (el aguante lleno y los golpes no lo quit
 
 ![El cementerio, con las teclas del t&iacute;tulo](../imagenes/fantasmas.gif)
 
+## Los planos
+
+Los seis lugares enteros, con cada pantalla en su sitio del plano (0x4038), a la mitad de tamaño. Están **pintados
+ejecutando la ROM** (`tools/mapas.py`): cada pantalla la monta `pantalla_monta` (0x9257) en la RAM, sobre las
+casillas de un cuadro grabado de su lugar; las casillas son las mismas en todos y solo cambia el color de las
+0x41-0x47 (`sala_colores`, 0x8206). Sin marcador, sprites ni los objetos que se pintan aparte.
+
+El plano tiene **un sexto lugar** (el 5, con las pantallas 0x45-0x49) al que llevan las puertas 28 a 32 de la tabla
+de 0xA0D7, y que ninguna grabación ha visitado: se pinta con las casillas del lugar 4, que es el color que le da
+`sala_colores`. Y cuatro pantallas, de la 0x13 a la 0x16, no están en ningún plano.
+
+Cotejo: de las 69 pantallas de los planos, las grabaciones solo pasan por 7; 3 salen **iguales** a la tabla de nombres
+grabada y las otras cuatro con entre 4 y 31 casillas distintas de 640 (los objetos). En 4.012 de 4.050 cuadros grabados (uno
+de cada siete), la pantalla que monta `pantalla_monta` aquí es la misma que tiene el juego en su RAM; de los 38 que
+no, 29 son de la primera pantalla, y no se han mirado uno a uno.
+
+![Lugar 0](../imagenes/plano_0.png)
+
+![Lugar 1](../imagenes/plano_1.png)
+
+![Lugar 2](../imagenes/plano_2.png)
+
+![Lugar 3](../imagenes/plano_3.png)
+
+![Lugar 4](../imagenes/plano_4.png)
+
+![Lugar 5, el que no se ha grabado](../imagenes/plano_5.png)
+
 ## Los sucesos
 
 Cada lugar tiene su **suceso** (`sala_suceso`, 0x8252): un dibujo grande que aparece en una pantalla concreta (la de

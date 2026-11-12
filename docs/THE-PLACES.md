@@ -14,6 +14,34 @@ pilot against the y&#333;kai of the graveyard:
 
 ![The graveyard, with the title keys](imagenes/fantasmas.gif)
 
+## The plans
+
+All six places, whole, each screen in its spot on the plan (0x4038), at half size. They are **drawn by running the
+ROM** (`tools/mapas.py`): each screen is built by `pantalla_monta` (0x9257) in RAM, over the tiles of a recorded frame
+of its place; the tiles are the same everywhere and only the colour of 0x41-0x47 changes (`sala_colores`, 0x8206). No
+scoreboard, sprites or the objects that are drawn separately.
+
+The plan holds **a sixth place** (number 5, screens 0x45-0x49), reached by doors 28 to 32 of the table at 0xA0D7, that
+no recording has visited: it is drawn with the tiles of place 4, which is the colour `sala_colores` gives it. And four
+screens, 0x13 to 0x16, are on no plan at all.
+
+Check: of the 69 screens on the plans, the recordings only go through 7; 3 come out **identical** to the recorded name
+table and the other four with 4 to 31 differing tiles out of 640 (the objects). On 4,012 of 4,050 recorded frames (one in
+seven), the screen `pantalla_monta` builds here is the same one the game holds in RAM; of the 38 that are not, 29 are
+on the first screen, and they have not been looked at one by one.
+
+![Place 0](imagenes/plano_0.png)
+
+![Place 1](imagenes/plano_1.png)
+
+![Place 2](imagenes/plano_2.png)
+
+![Place 3](imagenes/plano_3.png)
+
+![Place 4](imagenes/plano_4.png)
+
+![Place 5, the one never recorded](imagenes/plano_5.png)
+
 ## The events
 
 Each place has its **event** (`sala_suceso`, 0x8252): a large drawing that appears on a given screen (the one at
