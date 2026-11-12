@@ -12,6 +12,8 @@ el arma en 0xE320 y los doce enemigos desde 0xE340 (+4 el tipo, por la tabla 0xA
                      con el siguiente (+ 4) cuando lo cambian; y los dos que se ven al vencer una sala (`suceso_vencido`:
                      0xAC y 0xB0)
   andar_cuadros.gif  el protagonista andando a los dos lados y los enemigos con sus dos dibujos
+  dibujos.png        LOS 64 DIBUJOS de la tabla, en orden y en blanco, con su numero: todos los usa algun codigo
+                     (USOS) menos 0x90, enmarcado en rojo; 0xE4 esta vacio
 
 Uso: hojas.py docs/imagenes | hojas.py cotejo
 """
@@ -30,7 +32,24 @@ POSES = [0x0C, 0x08, 0x10, 0x14, 0x18, 0x1C]
 ENEMIGOS = [((0x38, 0x3C), 15, 0xA216), ((0x30, 0x34), 7, 0xAAE8), ((0x4C, 0x50), 5, 0xA451), ((0x4C, 0x50), 9, 0xA457),
             ((0x88, 0x9C), 6, 0xA4E3), ((0xF8,), 9, 0xA7A3), ((0xAC,), 5, 0xAB20), ((0xE4,), 11, 0xABE9),
             ((0x40,), 9, 0xABF9), ((0xB8,), 4, 0xAC18), ((0xA8,), 9, 0xAC90), ((0x40,), 1, 0xAD81),
-            ((0xD4, 0xD8, 0xDC, 0xE0), 15, 0xA884), ((0xA4,), 9, 0xA60A)]
+            ((0xD4, 0xD8, 0xDC, 0xE0), 15, 0xA884), ((0x94, 0x98), 9, 0xA60A), ((0x44, 0x48), 4, 0xA770),
+            ((0xE8, 0xF0), 9, 0xA7AB), ((0xA4,), 9, 0xA91B)]
+
+# Quien pone cada dibujo (los 64 de la tabla); la web los lista todos (tests/test_web.py lo comprueba)
+USOS = {
+    0x00: 0x8A04, 0x04: 0x8A04, 0x60: 0x8A09, 0x64: 0x8A09,
+    0x08: 0x8EF3, 0x0C: 0x880D, 0x10: 0x8A9F, 0x14: 0x8819, 0x18: 0x8C2F, 0x1C: 0x8EFC,
+    0x68: 0x8EF7, 0x6C: 0x8811, 0x70: 0x8AA7, 0x74: 0x881D, 0x78: 0x8C37, 0x7C: 0x8F00,
+    0x20: 0xAE50, 0x80: 0xAE54, 0x5C: 0xAE5A, 0xBC: 0xAE5E, 0x24: 0x8BFC, 0x84: 0x8C00,
+    0x28: 0x860B, 0x2C: 0x8615, 0x30: 0xA32A, 0x34: 0xA32A, 0x38: 0xA222, 0x3C: 0xA222,
+    0x40: 0xABF9, 0x44: 0xA76D, 0x48: 0xA76D, 0x4C: 0xA45B, 0x50: 0xA4BC, 0x54: 0xA601, 0x58: 0xA68C,
+    0x88: 0xA4E3, 0x8C: 0xA4E7, 0x9C: 0xA593, 0xA0: 0xA597, 0x94: 0xA606, 0x98: 0xA68C,
+    0xA4: 0xA917, 0xA8: 0xAC90, 0xAC: 0xAB20, 0xB0: 0xAB24, 0xB4: 0x831F, 0xB8: 0xAC18,
+    0xC0: 0x816F, 0xC4: 0x8173, 0xC8: 0x816B, 0xCC: 0x80E9, 0xD0: 0x8167,
+    0xD4: 0xA9F7, 0xD8: 0xA9F7, 0xDC: 0xA9F7, 0xE0: 0xA9F7, 0xE4: 0xABE9,
+    0xE8: 0xA7D0, 0xEC: 0xA7D5, 0xF0: 0xA7D0, 0xF4: 0xA7D5, 0xF8: 0xA7A3, 0xFC: 0xA7A7,
+}
+SIN_USO = [0x90]
 
 
 def patrones():
@@ -70,7 +89,8 @@ def hoja(Image):
 
 def hoja_enemigos(Image):
     pat, E = patrones(), 3
-    im = Image.new("RGB", (5 * 60 * E, 3 * 20 * E + 4 * E), FONDO)
+    filas = (len(ENEMIGOS) + 1 + 4) // 5
+    im = Image.new("RGB", (5 * 60 * E, filas * 20 * E + 4 * E), FONDO)
     k = 0
     for ds, c, _ in ENEMIGOS:
         x, y = 2 + 60 * (k % 5), 2 + 20 * (k // 5)
@@ -79,6 +99,20 @@ def hoja_enemigos(Image):
         k += 1
     pinta(im, pat, 0xAC, 2 + 60 * (k % 5), 2 + 20 * (k // 5), 15, E)
     pinta(im, pat, 0xB0, 20 + 60 * (k % 5), 2 + 20 * (k // 5), 5, E)
+    return im
+
+
+def hoja_todos(Image):
+    from PIL import ImageDraw
+    pat, E = patrones(), 3
+    im = Image.new("RGB", (16 * 24 * E, 4 * 30 * E), FONDO)
+    d = ImageDraw.Draw(im)
+    for n in range(0, 256, 4):
+        x, y = 4 + 24 * ((n // 4) % 16), 2 + 30 * (n // 64)
+        if n in SIN_USO:
+            d.rectangle(((x - 2) * E, (y - 2) * E, (x + 18) * E - 1, (y + 18) * E - 1), outline=(255, 64, 64), width=E)
+        pinta(im, pat, n, x, y, 15, E)
+        d.text((x * E + 8, (y + 19) * E), "%02X" % n, fill=(255, 255, 0))
     return im
 
 
@@ -172,7 +206,8 @@ def main(argv):
     hoja(Image).save(os.path.join(salida, "protagonista.png"))
     hoja_enemigos(Image).save(os.path.join(salida, "enemigos.png"))
     guarda_gif(anima(Image), os.path.join(salida, "andar_cuadros.gif"))
-    for f in ("protagonista.png", "enemigos.png", "andar_cuadros.gif"):
+    hoja_todos(Image).save(os.path.join(salida, "dibujos.png"))
+    for f in ("protagonista.png", "enemigos.png", "andar_cuadros.gif", "dibujos.png"):
         print(f, os.path.getsize(os.path.join(salida, f)))
     return 0
 

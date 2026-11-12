@@ -25,5 +25,13 @@ end of page 1, behind the graphics.
 
 - **Dead code**: 47 bytes at 0x93D1, 23 at 0xA9D6, 19 at 0xAFA3 (a routine that removes an object that goes off the
   screen) and a `ret` at 0xA4C2; no jump reaches them and the coverage measured in openMSX does not go through them.
+- **The 23 bytes at 0xA9D6** sit in the middle of the white ghost's jump (0xA989-0xA9D3) and are another way down
+  for that jump: Y two more per frame (`inc (iy+0)` twice), the count (+0x0E) one less and, when it ends, state 1 and
+  +0x0D to zero, like the way down that is used (0xA9B2), which goes through the table at 0x8F91. It looks like the way
+  down from before the table. It does not touch the drawing.
+- **Drawing 0x90, unused**: of the 64 in the sprite table, it is the only one no instruction puts in a sprite
+  ([The sprites](THE-SPRITES.html)). Néstor Sancho found it; his
+  [patch](https://github.com/theNestruo/msx-youkaiyashiki-patch) uses those 23 bytes to show it in the white ghost's
+  jump; whether the game meant it for that cannot be told from the code.
 - **Filler**: 12 bytes of 0xF0 at 0x7FF4, 30 bytes of FB 00 at 0xB6E2 and the rest of the scoreboard after GAME OVER
   (0x571D).

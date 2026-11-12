@@ -27,4 +27,12 @@ arranque est&aacute; al final de la p&aacute;gina 1, detr&aacute;s de los gr&aac
 
 - **C&oacute;digo muerto**: 47 bytes en 0x93D1, 23 en 0xA9D6, 19 en 0xAFA3 (una rutina que saca un objeto que se sale de
   la pantalla) y un `ret` en 0xA4C2; ning&uacute;n salto llega y la medida de cobertura en openMSX no pasa.
+- **Los 23 bytes de 0xA9D6** est&aacute;n en medio del salto del fantasma blanco (0xA989-0xA9D3) y son otra bajada
+  del mismo salto: la Y dos m&aacute;s por cuadro (`inc (iy+0)` dos veces), la cuenta (+0x0E) una menos y, acabada, el
+  estado 1 y +0x0D a cero, como la bajada que s&iacute; se usa (0xA9B2), que va por la tabla 0x8F91. Parece la bajada
+  de antes de la tabla. No toca el dibujo.
+- **El dibujo 0x90, sin uso**: de los 64 de la tabla de sprites, es el &uacute;nico que ninguna instrucci&oacute;n
+  pone en un sprite ([Los sprites](LOS-SPRITES.html)). Lo encontr&oacute; N&eacute;stor Sancho, que en su
+  [parche](https://github.com/theNestruo/msx-youkaiyashiki-patch) usa esos 23 bytes para ponerlo en el salto del
+  fantasma blanco; que el juego lo pensara para eso no se puede saber por el c&oacute;digo.
 - **Relleno**: 12 bytes 0xF0 en 0x7FF4, 30 bytes FB 00 en 0xB6E2 y el resto del marcador tras GAME OVER (0x571D).

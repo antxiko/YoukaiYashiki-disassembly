@@ -9,6 +9,7 @@ las vidas, 0xE0A9 el aguante, 0xE183 la muerte, 0xE2BD la musica.
   partida     el piloto (tools/guiones/piloto.tcl): el cementerio, cuatro caidas y GAME OVER
   trucos      las teclas del titulo (el aguante lleno, los golpes no lo quitan) y el piloto contra los fantasmas
   forzada     FORZADA con pokes: las salas 1 a 4 (0xE00A y F1)
+  pausa       el piloto y STOP a los 300 cuadros de juego: la pausa con su marco; STOP otra vez a los 600
 
 Las grabaciones son grandes: cada una se lee UNA vez.
 
@@ -31,13 +32,15 @@ TRAMOS = [
     ("sala_2.gif", "forzada", 2500, 3400, 3),           # FORZADA: la sala 2
     ("sala_3.gif", "forzada", 4000, 4900, 3),           # FORZADA: la sala 3
     ("sala_4.gif", "forzada", 5500, 6400, 3),           # FORZADA: la sala 4
+    ("pausa.gif", "pausa", 640, 1060, 2),               # STOP: la pausa y su marco, y STOP otra vez
 ]
 
 
 def main(salida):
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    for grab in dict.fromkeys(t[1] for t in TRAMOS):
-        mios = [t for t in TRAMOS if t[1] == grab]
+    solo = sys.argv[2:]
+    for grab in dict.fromkeys(t[1] for t in TRAMOS if not solo or t[0] in solo):
+        mios = [t for t in TRAMOS if t[1] == grab and (not solo or t[0] in solo)]
         gifs = {t[0]: vdp.Gif() for t in mios}
         tope = max(t[3] for t in mios) + max(t[4] for t in mios)
         espera = {}                                    # fichero -> (imagen, t) pendiente de su duracion

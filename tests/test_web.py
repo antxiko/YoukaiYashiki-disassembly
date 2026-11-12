@@ -175,3 +175,41 @@ class LasImagenes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TodosLosDibujos(unittest.TestCase):
+    """Cada dibujo de la tabla de sprites de la ROM (los 0x800 bytes de 0x5800) sale en la tabla de Los sprites de los
+    dos idiomas, con quien lo pone o como sin uso; y lo que dice la web cuadra con el listado: la direccion de cada uso
+    es una instruccion que escribe ese dibujo (o lo calcula) en un sprite, y el sin uso no lo escribe ninguna."""
+
+    def setUp(self):
+        import hojas
+        self.h = hojas
+
+    def test_los_64_en_la_tabla_de_los_dos_idiomas(self):
+        for pag in ("THE-SPRITES.md", os.path.join("es", "LOS-SPRITES.md")):
+            texto = lee_texto(os.path.join(DOCS, pag))
+            filas = [ln for ln in texto.splitlines() if ln.startswith("| 0x")]
+            listados = set()
+            for ln in filas:
+                listados.update(int(x, 16) for x in re.findall(r"0x([0-9A-F]{2})\b", ln.split("|")[1]))
+            self.assertEqual(listados, set(range(0, 256, 4)), pag)
+
+    def test_cada_uso_es_una_escritura_de_dibujo(self):
+        lineas = {}
+        for ln in lee_texto(ASM).splitlines():
+            m = re.search(r";([0-9a-f]{4})\b", ln)
+            if m and ln.startswith("\t"):
+                lineas.setdefault(int(m.group(1), 16), ln)
+        for d, a in self.h.USOS.items():
+            ln = lineas[a]
+            self.assertRegex(ln, r"ld \((?:i[xy]\+0[0-3][28]h|0e3[0-9a-f]2h)\),", "0x%02X en 0x%04X" % (d, a))
+            if "),a" not in ln.replace("\t", ""):
+                self.assertIn("0%02xh" % d, ln.lower(), "0x%02X en 0x%04X" % (d, a))
+
+    def test_nadie_escribe_el_0x90(self):
+        for ln in lee_texto(ASM).splitlines():
+            if re.search(r"ld \((?:i[xy]\+0[0-3][28]h|0e3[0-9a-f]2h)\),0?90h", ln):
+                self.fail(ln)
+        self.assertEqual(self.h.SIN_USO, [0x90])
+        self.assertEqual(set(self.h.USOS) | set(self.h.SIN_USO), set(range(0, 256, 4)))
