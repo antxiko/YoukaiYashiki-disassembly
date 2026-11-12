@@ -182,7 +182,7 @@ L 0xB2C1 pantalla_cierra_columna
 L 0xB2C6 pantalla_cierra_espera
 L 0xB2D1 pantalla_cierra_fila
 L 0xB2E4 nombres_borra             La tabla de nombres llena de la casilla 0x10 (el espacio)
-L 0xB3AF puntos_suma               Jugando, los puntos + A (BCD, las dos ultimas cifras, 0xE00E) con su acarreo; cada 10.000 (100.000 en pantalla) una vida mas; al pasar de 999999 el record se queda con los puntos; desde 5.000 (0xE00D 0x50; en pantalla 50.000), una vida mas, una vez (0xE04F); y las cifras y el record
+L 0xB3AF puntos_suma               Jugando, los puntos + A (BCD, las dos ultimas cifras, 0xE00E) con su acarreo; al pasar de 999999 el record (0xE094) = los puntos, ya dados la vuelta; sin vidas de mas; y las cifras y el record
 L 0xB40D record_mira               Si los puntos (0xE00C) pasan del record (0xE034), son el record nuevo y sus cifras (0xE02E)
 C 0xB4AE la fila 6: F1 (bit 5)?
 C 0xB4B7 suelta

@@ -7873,7 +7873,7 @@ puntos_pinta:		; Las seis cifras de los puntos (0xE001) en la fila 1 y del recor
 	ld de,01819h		;b3a6   ; la fila 0, columna 25
 	ld bc,00006h		;b3a9   ; seis
 	jp 0005ch		;b3ac   ; LDIRVM
-puntos_suma:		; Jugando, los puntos + A (BCD, las dos ultimas cifras, 0xE00E) con su acarreo; cada 10.000 (100.000 en pantalla) una vida mas; al pasar de 999999 el record se queda con los puntos; desde 5.000 (0xE00D 0x50; en pantalla 50.000), una vida mas, una vez (0xE04F); y las cifras y el record
+puntos_suma:		; Jugando, los puntos + A (BCD, las dos ultimas cifras, 0xE00E) con su acarreo; al pasar de 999999 el record (0xE094) = los puntos, ya dados la vuelta; sin vidas de mas; y las cifras y el record
 	ld b,a			;b3af   ; lo que se suma
 	ld a,(0e000h)		;b3b0   ; jugando?
 	and a			;b3b3
