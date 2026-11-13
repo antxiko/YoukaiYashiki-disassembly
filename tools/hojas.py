@@ -8,9 +8,8 @@ el arma en 0xE320 y los doce enemigos desde 0xE340 (+4 el tipo, por la tabla 0xA
   protagonista.png   dos sprites en el mismo sitio: el dibujo en magenta y el dibujo + 0x60 en amarillo claro (`sala_empieza`
                      0x806D, `caida_para` 0x87A3): de pie 0x0C y 0x14 (0x880D, por su lado), andando 0x08-0x1C; y el
                      arma (0xE320, `ataque_sale`): 0x28 o 0x2C segun el lado
-  enemigos.png       los dibujos y colores que las rutinas de los enemigos (0xA216-0xAD85) ponen en su sprite, cada uno
-                     con el siguiente (+ 4) cuando lo cambian; y los dos que se ven al vencer una sala (`suceso_vencido`:
-                     0xAC y 0xB0)
+  enemigos.png       TIPO A TIPO (la tabla de rutinas 0xA1E8): las figuras que el codigo de cada tipo pone, con sus
+                     dibujos y colores (TIPOS)
   andar_cuadros.gif  el protagonista andando a los dos lados y los enemigos con sus dos dibujos
   dibujos.png        LOS 64 DIBUJOS de la tabla, en orden y en blanco, con su numero: todos los usa algun codigo
                      (USOS) menos 0x90, enmarcado en rojo; 0xE4 esta vacio
@@ -28,12 +27,52 @@ ORG = 0x4000
 ROM = open(os.path.join(RAIZ, "youkai.rom"), "rb").read()
 FONDO = (64, 64, 80)
 POSES = [0x0C, 0x08, 0x10, 0x14, 0x18, 0x1C]
-# (dibujos, color, donde lo pone el codigo)
-ENEMIGOS = [((0x38, 0x3C), 15, 0xA216), ((0x30, 0x34), 7, 0xAAE8), ((0x4C, 0x50), 5, 0xA451), ((0x4C, 0x50), 9, 0xA457),
-            ((0x88, 0x9C), 6, 0xA4E3), ((0xF8,), 9, 0xA7A3), ((0xAC,), 5, 0xAB20), ((0xE4,), 11, 0xABE9),
-            ((0x40,), 9, 0xABF9), ((0xB8,), 4, 0xAC18), ((0xA8,), 9, 0xAC90), ((0x40,), 1, 0xAD81),
-            ((0xD4, 0xD8, 0xDC, 0xE0), 15, 0xA884), ((0x94, 0x98), 9, 0xA60A), ((0x44, 0x48), 4, 0xA770),
-            ((0xE8, 0xF0), 9, 0xA7AB), ((0xA4,), 9, 0xA91B)]
+# LOS TIPOS DE ENEMIGO (la tabla de rutinas 0xA1E8, +4 del enemigo): (tipos, rutina, figuras). Cada figura es una
+# imagen: sus sprites (dibujo, color, dx, dy). Los que esperan (`enemigo_espera` 0xA216) salen antes con 0x38/0x3C en
+# blanco, y al vencerlos (0xA22C) se quedan con 0x38/0x3C en su color: eso no se repite aqui. Los tipos 0x00 (el
+# enemigo no se mueve: `enemigos` salta los de tipo 0), 0x06 (0xA5EA) y 0x0A (0xA777) no tienen nada: sus rutinas son
+# un `ret` y su sprite no lleva dibujo ni color.
+TIPOS = [
+    ((0x01,), 0xA278, [[(0x30, 7, 0, 0)], [(0x34, 15, 0, 0)]]),
+    ((0x02,), 0xA278, [[(0x30, 15, 0, 0)], [(0x34, 15, 0, 0)]]),
+    ((0x03,), 0xA444, [[(0x4C, 5, 0, 0)], [(0x50, 5, 0, 0)], [(0x4C, 4, 0, 0)]]),
+    ((0x04,), 0xA444, [[(0x4C, 9, 0, 0)], [(0x50, 9, 0, 0)], [(0x4C, 4, -4, 0), (0x4C, 4, 4, 0)]]),
+    ((0x05,), 0xA4C3, [[(0x88, 6, 0, 0), (0x8C, 10, 0, 16)], [(0x9C, 6, 0, 0), (0xA0, 10, 0, 16)]]),
+    ((0x07,), 0xA5EB, [[(0x54, 15, 0, 0)], [(0x58, 15, 0, 0)], [(0x54, 7, 0, 0)]]),
+    ((0x08,), 0xA5EB, [[(0x94, 9, 0, 0)], [(0x98, 9, 0, 0)], [(0x94, 3, 0, 0)]]),
+    ((0x09,), 0xA6B7, [[(0x44, 4, 0, 0)], [(0x48, 4, 0, 0)]]),
+    ((0x0B,), 0xA778, [[(0xE8, 9, 0, 0), (0xEC, 11, 0, 0)], [(0xF0, 9, 0, 0), (0xF4, 11, 0, 0)],
+                       [(0xF8, 9, 0, 0), (0xFC, 11, 0, 0)]]),
+    ((0x0C, 0x0E, 0x0F, 0x14), 0xA853, [[(0xD4, 15, 0, 0)], [(0xD8, 15, 0, 0)], [(0xDC, 15, 0, 0)],
+                                        [(0xE0, 15, 0, 0)], [(0xD4, 9, 0, 0)], [(0xD4, 5, 0, 0)]]),
+    ((0x0D,), 0xAA49, [[(0xA4, 9, 0, 0)]]),
+    ((0x10,), 0xABB8, [[(0xB8, 11, 0, 0)], [(0xA8, 11, 0, 0)]]),
+    ((0x11,), 0xACC6, [[(0x38, 5, 0, 0)], [(0x3C, 5, 0, 0)]]),
+    ((0x12,), 0xABB8, [[(0x40, 9, 0, 0)]]),
+    ((0x13,), 0xAD6F, [[(0x40, 1, 0, 0)], [(0x40, 3, 0, 0)], [(0x40, 5, 0, 0)], [(0x40, 7, 0, 0)], [(0x40, 9, 0, 0)]]),
+    ((0x15,), 0xAA9A, [[(0xAC, 11, 0, 0), (0xB0, 15, 0, 16)], [(0xAC, 9, 0, 0), (0xB0, 15, 0, 16)]]),
+    ((0x16,), 0xAA9A, [[(0xAC, 7, 0, 0), (0xB0, 15, 0, 16)], [(0xAC, 5, 0, 0), (0xB0, 15, 0, 16)]]),
+]
+# Los que pasan por `enemigo_espera` (0x38/0x3C en blanco antes de moverse)
+ESPERAN = {0x01, 0x02, 0x05, 0x07, 0x08, 0x09}
+# Lo que no se ve: el 0x10 espera con el dibujo vacio 0xE4 (0xABE9); y el 0x0C que no entra por un borde (0xA8A6) se
+# queda UN cuadro con el color 15 y el dibujo que tuviera (0x00 tras `enemigos_borra`: el protagonista de espaldas)
+EXTRA = {0x10: {(0xE4, 11)}, 0x0C: {(0x00, 15)}, 0x0E: {(0x00, 15)}, 0x0F: {(0x00, 15)}, 0x14: {(0x00, 15)}}
+
+
+def permitidos(tipo):
+    """(dibujo, color) que el codigo de ese tipo pone en su primer sprite: sus dibujos (y el + 4) con sus colores (el
+    codigo los cambia por separado), la espera en blanco, vencido 0x38/0x3C en sus colores, y EXTRA."""
+    for tipos, _, figuras in TIPOS:
+        if tipo in tipos:
+            colores = {f[0][1] for f in figuras}
+            dibujos = {f[0][0] + k for f in figuras for k in (0, 4)} | {0x38, 0x3C}
+            r = {(d, c) for d in dibujos for c in colores} | EXTRA.get(tipo, set())
+            if tipo in ESPERAN:
+                r |= {(0x38, 15), (0x3C, 15)}
+            return r
+    return set()
+
 
 # Quien pone cada dibujo (los 64 de la tabla); la web los lista todos (tests/test_web.py lo comprueba)
 USOS = {
@@ -88,17 +127,19 @@ def hoja(Image):
 
 
 def hoja_enemigos(Image):
+    """Una fila por tipo: su numero y sus figuras."""
+    from PIL import ImageDraw
     pat, E = patrones(), 3
-    filas = (len(ENEMIGOS) + 1 + 4) // 5
-    im = Image.new("RGB", (5 * 60 * E, filas * 20 * E + 4 * E), FONDO)
-    k = 0
-    for ds, c, _ in ENEMIGOS:
-        x, y = 2 + 60 * (k % 5), 2 + 20 * (k // 5)
-        for j, d in enumerate(ds[:3]):
-            pinta(im, pat, d, x + 18 * j, y, c, E)
-        k += 1
-    pinta(im, pat, 0xAC, 2 + 60 * (k % 5), 2 + 20 * (k // 5), 15, E)
-    pinta(im, pat, 0xB0, 20 + 60 * (k % 5), 2 + 20 * (k // 5), 5, E)
+    alto = [20 + 16 * any(dy for f in figs for *_, dy in f) for _, _, figs in TIPOS]
+    im = Image.new("RGB", (160 * E, (sum(alto) + 4) * E), FONDO)
+    d = ImageDraw.Draw(im)
+    y = 2
+    for (tipos, _, figuras), h in zip(TIPOS, alto):
+        d.text((2 * E, (y + 5) * E), " ".join("%02X" % t for t in tipos), fill=(255, 255, 0))
+        for k, fig in enumerate(figuras):
+            for dib, c, dx, dy in fig:
+                pinta(im, pat, dib, 30 + 21 * k + dx, y + dy, c, E)
+        y += h
     return im
 
 
@@ -121,8 +162,9 @@ def anima(Image):
     for n in range(48):
         im = Image.new("RGB", (5 * 20 * E, 20 * E), FONDO)
         prota(im, pat, 0x08 + (n // 8 % 3) * 4 if n < 24 else 0x10 + (n // 8 % 3) * 4, 2, 2, E)
-        for k, (ds, c, _) in enumerate((ENEMIGOS[0], ENEMIGOS[2], ENEMIGOS[4])):
-            pinta(im, pat, ds[(n // 8) % len(ds)], 22 + 20 * k, 2, c, E)
+        for k, i in enumerate((0, 2, 7)):                 # los tipos 0x01, 0x03 y 0x09, con sus dos dibujos
+            dib, c, _, _ = TIPOS[i][2][(n // 8) % 2][0]
+            pinta(im, pat, dib, 22 + 20 * k, 2, c, E)
         cuadros.append(im)
     return cuadros
 
@@ -144,17 +186,13 @@ def cotejo():
     1) la tabla de dibujos de los sprites (VRAM 0x3800-0x3FFF) contra los 0x800 bytes de 0x5800;
     2) el protagonista (0xE300 y 0xE310): en el mismo sitio, el dibujo y el + 0x60 en amarillo claro;
     3) el arma (0xE320): 0x28 o 0x2C;
-    4) los enemigos (0xE340, 16 bytes): un dibujo (o el + 4) y un color de los que pone su codigo."""
+    4) los enemigos (0xE340, 16 bytes), TIPO A TIPO: el dibujo y el color de su primer sprite, uno de los que pone el
+       codigo de su tipo (permitidos); cuantos cuadros de cada tipo."""
     pat = patrones()
-    dibujos = set()
-    colores = set()
-    for ds, c, _ in ENEMIGOS:
-        dibujos.update(ds)
-        dibujos.update(d + 4 for d in ds)
-        colores.add(c)
     tot = dict(patrones=0, pat_carga=0, pat_mal=0, prota=0, prota_sin_poner=0, prota_mal=0, arma=0, arma_mal=0,
                enemigos=0, enemigos_mal=0)
-    for grab in ("atraccion", "partida", "forzada", "trucos"):
+    por_tipo = {}
+    for grab in ("atraccion", "partida", "forzada", "trucos", "jefes", "final"):
         ruta = os.path.join(RAIZ, "work", grab + ".bin")
         if not os.path.exists(ruta):
             continue
@@ -190,9 +228,12 @@ def cotejo():
                 e = ram[0x340 + 16 * k:0x350 + 16 * k]
                 if e[0] >= 0xC0 or e[4] == 0 or e[3] & 15 == 0:
                     continue
-                ok = e[2] in dibujos and e[3] & 15 in colores
+                ok = (e[2], e[3] & 15) in permitidos(e[4])
                 tot["enemigos"] += ok
                 tot["enemigos_mal"] += not ok
+                pt = por_tipo.setdefault("%02X" % e[4], [0, 0])
+                pt[0 if ok else 1] += 1
+    tot["por_tipo"] = dict(sorted(por_tipo.items()))
     return tot
 
 

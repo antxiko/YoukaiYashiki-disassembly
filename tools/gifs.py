@@ -9,7 +9,13 @@ las vidas, 0xE0A9 el aguante, 0xE183 la muerte, 0xE2BD la musica.
   partida     el piloto (tools/guiones/piloto.tcl): el cementerio, cuatro caidas y GAME OVER
   trucos      las teclas del titulo (el aguante lleno, los golpes no lo quitan) y el piloto contra los fantasmas
   forzada     FORZADA con pokes: las salas 1 a 4 (0xE00A y F1)
-  pausa       el piloto y STOP a los 300 cuadros de juego: la pausa con su marco; STOP otra vez a los 600
+  pausa       el piloto y STOP a los 300 cuadros de juego: la pausa con su marco; STOP otra vez a los 600. El GIF
+              es LIMPIO: solo los cuatro sprites del marco (la tabla de sprites grabada, sin la pantalla), en su
+              recuadro de 32 x 32, a 4x y con el fondo transparente, mientras la tabla de sprites grabada lleva el
+              marco (el sprite 0 con el dibujo 0xD0: la VRAM va un cuadro por detras de 0xE1B7)
+  final       FORZADO (tools/guiones/final.tcl): el final, en la pantalla 0x3C del lugar 4
+  jefes       FORZADA (tools/guiones/jefes.tcl): los cinco sucesos, cada uno con un piloto hecho para el; el del
+              lugar 1 se vence jugando
 
 Las grabaciones son grandes: cada una se lee UNA vez.
 
@@ -32,13 +38,53 @@ TRAMOS = [
     ("sala_2.gif", "forzada", 2500, 3400, 3),           # FORZADA: la sala 2
     ("sala_3.gif", "forzada", 4000, 4900, 3),           # FORZADA: la sala 3
     ("sala_4.gif", "forzada", 5500, 6400, 3),           # FORZADA: la sala 4
-    ("pausa.gif", "pausa", 640, 1060, 2),               # STOP: la pausa y su marco, y STOP otra vez
+    ("final.gif", "final", 1180, 1990, 2),              # FORZADO: el final
+    ("jefe_0.gif", "jefes", 1182, 2100, 3),             # FORZADA: el suceso del lugar 0
+    ("jefe_1.gif", "jefes", 5682, 6600, 3),             # FORZADA: el del lugar 1...
+    ("jefe_1_vencido.gif", "jefes", 8560, 9150, 2),     # ...y vencido jugando: la musica 7 y los dos que suben
+    ("jefe_2.gif", "jefes", 9808, 10700, 3),            # FORZADA: el del lugar 2
+    ("jefe_3.gif", "jefes", 14322, 15200, 3),           # FORZADA: el del lugar 3
+    ("jefe_4.gif", "jefes", 18822, 19700, 3),           # FORZADA: el del lugar 4
 ]
+PAUSA = (0x28, 0x5E, 0x48, 0x7E)                        # el recuadro del marco: X 0x28-0x47, Y 0x5E-0x7D
+
+
+def pausa_limpia(salida, desde=640, hasta=1060, escala=4):
+    """La pausa SIN la pantalla: solo los sprites grabados (vdp.sprites sobre nada), en el recuadro del marco."""
+    from PIL import Image
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    g = vdp.Gif()
+    previo = None
+    for n, c in enumerate(vdp.cuadros(os.path.join(raiz, "work", "pausa.bin"))):
+        if n > hasta:
+            break
+        attr = (c["regs"][5] & 0x7F) * 0x80
+        if n < desde or c["vram"][attr + 2] != 0xD0:        # la VRAM va un cuadro por detras de la RAM (0xE1B7)
+            continue
+        t = [[0] * 256 for _ in range(192)]
+        vdp.sprites(c["vram"], c["regs"], t)
+        x0, y0, x1, y1 = PAUSA
+        im = Image.new("P", (x1 - x0, y1 - y0))
+        pal = []
+        for col in vdp.PALETA:
+            pal += list(col)
+        im.putpalette(pal + [0] * (768 - len(pal)))
+        im.putdata([t[y][x] for y in range(y0, y1) for x in range(x0, x1)])
+        im = im.resize((im.width * escala, im.height * escala), Image.NEAREST)
+        if previo:
+            g.pon(previo[0], (c["t"] - previo[1]) * 1000.0 / g.ms)
+        previo = (im, c["t"])
+    g.pon(previo[0], 1)
+    ruta = os.path.join(salida, "pausa.gif")
+    g.guarda(ruta, 4000, transparente=True)
+    print("%-24s %4d imagenes, %8d bytes" % ("pausa.gif", len(g), os.path.getsize(ruta)))
 
 
 def main(salida):
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     solo = sys.argv[2:]
+    if not solo or "pausa.gif" in solo:
+        pausa_limpia(salida)
     for grab in dict.fromkeys(t[1] for t in TRAMOS if not solo or t[0] in solo):
         mios = [t for t in TRAMOS if t[1] == grab and (not solo or t[0] in solo)]
         gifs = {t[0]: vdp.Gif() for t in mios}

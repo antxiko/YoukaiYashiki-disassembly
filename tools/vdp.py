@@ -204,7 +204,8 @@ class Gif:
     def __len__(self):
         return len(self.imgs)
 
-    def guarda(self, ruta, tope_ms=None):
+    def guarda(self, ruta, tope_ms=None, transparente=False):
+        """transparente: el color 0 sin pintar (y cada imagen borra la anterior: disposal 2)."""
         durs = [min(d, tope_ms) if tope_ms else d for d in self.durs]
         # el GIF cuenta en centesimas: se reparte el redondeo para no derivar
         out, acum, hecho = [], 0.0, 0
@@ -213,8 +214,9 @@ class Gif:
             v = int(round(acum / 10.0)) * 10 - hecho
             out.append(max(v, 20))
             hecho += out[-1]
+        extra = {"transparency": 0, "disposal": 2} if transparente else {"disposal": 1}
         self.imgs[0].save(ruta, save_all=True, append_images=self.imgs[1:],
-                          duration=out, loop=0, optimize=False, disposal=1)
+                          duration=out, loop=0, optimize=False, **extra)
 
 
 def gif(ruta, salida, desde=0, hasta=10 ** 9, cada=2, escala=1, recorte=None, tope_ms=None):

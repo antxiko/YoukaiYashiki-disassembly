@@ -1,5 +1,5 @@
 # lanza_graba.ps1 -rom x.rom -guion guion.tcl -salida work/x.bin [-bp 0x0038] [-ram "0xE000 0x1000"] [-maquina Philips_VG_8020] [-rom2 otro.rom]
-# -rom2: otro cartucho en el segundo slot (aqui, el primer Iga Ninpouchou)
+# -rom2: otro cartucho en el segundo slot (aqui no se usa)
 # UN openMSX con tools/omsx_graba.tcl, fuera del sandbox, minimizado
 param([string]$rom, [string]$guion, [string]$salida, [string]$bp = "0x0038", [string]$ram = "0xE000 0x1000", [string]$bp2 = "", [string]$maquina = "Philips_VG_8020", [string]$rom2 = "")
 $env:GRABA_SALIDA = $salida

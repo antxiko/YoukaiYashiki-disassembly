@@ -13,4 +13,4 @@ propias del cartucho.
 | 0x5705 | HISCORE:0000000 | SCORE (0x5707) es su final |
 | 0x5714 | GAME OVER | |
 | 0xAF4D | CONTINUE PUSH TRIG1 / END      PUSH TRIG2 | |
-| 0xA839 / 0xA846 | el texto del final, 13 + 13 casillas | con casillas propias y kana; no se ha visto en las grabaciones |
+| 0xA839 / 0xA846 | めでたし！ (13 + 13 casillas: las mitades de arriba y de abajo, con kana propios del cartucho) | el final, dos veces: "y fueron felices", el cierre de los cuentos japoneses (ver [Los lugares](LOS-LUGARES.html)) |

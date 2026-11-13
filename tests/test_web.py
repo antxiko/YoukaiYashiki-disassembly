@@ -125,8 +125,8 @@ class SinNombresDeOtroJuego(unittest.TestCase):
         for fn in os.listdir(os.path.join(RAIZ, "tools")):
             if fn.endswith((".py", ".sh", ".tcl", ".ps1")):
                 texto = lee_texto(os.path.join(RAIZ, "tools", fn)).lower()
-                for rom in re.findall(r"['\"/ ](\w+)\.rom", texto):
-                    self.assertIn(rom, ("youkai", "cbios_main_msx1_jp"), "%s: %s.rom" % (fn, rom))
+                for rom in re.findall(r"['\"/ ](?!self\.)(\w+)\.rom\b", texto):     # self.rom es un atributo
+                    self.assertIn(rom, ("youkai", "cbios_main_msx1_jp", "x", "otro"), "%s: %s.rom" % (fn, rom))
 
     def test_la_web_no_nombra_otro_juego(self):
         for raiz, _, ficheros in os.walk(DOCS):
@@ -187,13 +187,29 @@ class TodosLosDibujos(unittest.TestCase):
         self.h = hojas
 
     def test_los_64_en_la_tabla_de_los_dos_idiomas(self):
-        for pag in ("THE-SPRITES.md", os.path.join("es", "LOS-SPRITES.md")):
+        for pag, titulo in (("THE-SPRITES.md", "## The 64 drawings"), (os.path.join("es", "LOS-SPRITES.md"), "## Los 64 dibujos")):
             texto = lee_texto(os.path.join(DOCS, pag))
+            texto = texto[texto.index(titulo):]             # la tabla de los dibujos (la de los tipos va antes)
             filas = [ln for ln in texto.splitlines() if ln.startswith("| 0x")]
             listados = set()
             for ln in filas:
                 listados.update(int(x, 16) for x in re.findall(r"0x([0-9A-F]{2})\b", ln.split("|")[1]))
             self.assertEqual(listados, set(range(0, 256, 4)), pag)
+
+    def test_los_23_tipos_en_las_dos_paginas(self):
+        """Los 23 tipos de enemigo (0x00-0x16, tabla 0xA1E8) en la tabla de tipos de los dos idiomas, y en TIPOS de
+        hojas.py todos los que tienen rutina (menos el 0x00, que no se mueve, y los dos `ret`: 0x06 y 0x0A)."""
+        for pag, a, b in (("THE-SPRITES.md", "## The y&#333;kai, type by type", "## The pause"),
+                          (os.path.join("es", "LOS-SPRITES.md"), "## Los y&#333;kai, tipo a tipo", "## La pausa")):
+            texto = lee_texto(os.path.join(DOCS, pag))
+            texto = texto[texto.index(a):texto.index(b)]
+            listados = set()
+            for ln in texto.splitlines():
+                if ln.startswith("| 0x"):
+                    listados.update(int(x, 16) for x in re.findall(r"0x([0-9A-F]{2})\b", ln.split("|")[1]))
+            self.assertEqual(listados, set(range(0x17)), pag)
+        en_tipos = {t for tipos, _, _ in self.h.TIPOS for t in tipos}
+        self.assertEqual(en_tipos, set(range(0x17)) - {0x00, 0x06, 0x0A})
 
     def test_cada_uso_es_una_escritura_de_dibujo(self):
         lineas = {}

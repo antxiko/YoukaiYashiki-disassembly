@@ -34,6 +34,22 @@ del juego:
 Con los dos a la vez, ejecut&aacute;ndolo aqu&iacute;, derecha y abajo dan **izquierda** (7), y arriba-derecha y
 abajo-derecha, **abajo-izquierda** (6).
 
+## Fallo: los golpes al suceso del lugar 1 dan 10, 20, 30... puntos
+
+Cuando el arma toca a un y&#333;kai, el c&oacute;digo de su tipo carga los puntos en A y salta a `puntos_suma`. Los
+rayos del suceso del lugar 1 (tipo 0x10) hacen `ld a,010h` (0xA3FC, 100 puntos, como el 0x11 y el 0x12) y justo
+despu&eacute;s `ld a,(0e1b2h)` (0xA3FE) para contar el golpe: el 0x10 se pierde, y lo que se suma es **el n&uacute;mero
+de golpes**. Grabado en openMSX (el GIF de ese suceso en [Los lugares](LOS-LUGARES.html)), los puntos tras cada golpe:
+10, 30, 60, 100, 150, 210, 280, 360, 450 y **550**, donde ser&iacute;an 1.000. El suceso del lugar 4 lo hace al
+rev&eacute;s (`ld a,(0e1b2h)` ... `ld a,020h`, 0xAB63-0xAB6A) y da sus 200 por golpe.
+
+## Fallo: un cuadro con el dibujo del protagonista
+
+El fantasma blanco (tipos 0x0C, 0x0E, 0x0F y 0x14, 0xA853) que no entra por un borde recibe su color en el primer
+cuadro (blanco, 0xA8A6) pero no su dibujo, que llega en el siguiente: durante un cuadro su sprite ense&ntilde;a el
+dibujo que tuviera, el 0x00 tras `enemigos_borra`, **el protagonista de espaldas, en blanco**. En las grabaciones de
+esta web pasa 15 veces.
+
 ## Corregido en el listado
 
 El comentario de `puntos_suma` dec&iacute;a que daba una vida cada 100.000 puntos y otra a los 50.000: estaba copiado

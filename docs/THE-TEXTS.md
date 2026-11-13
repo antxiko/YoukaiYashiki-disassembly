@@ -12,4 +12,4 @@ which the start-up copies to VRAM (`letras_pon`, 0xB2F0). The name and the drawi
 | 0x5705 | HISCORE:0000000 | SCORE (0x5707) is its end |
 | 0x5714 | GAME OVER | |
 | 0xAF4D | CONTINUE PUSH TRIG1 / END      PUSH TRIG2 | |
-| 0xA839 / 0xA846 | the ending text, 13 + 13 tiles | with the cartridge's own tiles and kana; not seen in the recordings |
+| 0xA839 / 0xA846 | めでたし！ (13 + 13 tiles: the top and bottom halves, with the cartridge's own kana) | the ending, twice: "and they lived happily ever after", the closing line of Japanese tales (see [The places](THE-PLACES.html)) |
